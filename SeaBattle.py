@@ -80,3 +80,45 @@ class Game_board:
 
     def out(self, d):
         return not ((0<= d.x < self.size) and (0<= d.y < self.size))
+
+    def contour(self, ship, verb=True):
+        """
+        Метод contour заполняет пространство вокруг коробля на одну клетку.
+        Список near содержит все элементы вокруг центральной точки
+        В цилке проходим по точкам коробля и передаем d значение вида Dot(1, 2)
+        Во вложеном цикле проходим по списку near, и присваиваем dx и dy значения элементов списка. Далее в значение
+        cur записываем значение точки у корабля.
+        :param ship: вызываем Ship: Ship(Dot(1, 2), 4, 0)
+        :param verb: видимость поля вокруг кораблей.
+        :return:
+        """
+        near = [
+            (-1, -1), (-1, 0), (-1, 1),
+            (0, -1), (0, 0), (0, 1),
+            (1, -1), (1, 0), (1, 1)
+        ]
+        for d in ship.dots:
+            for dx, dy in near:
+                cur = Dot(d.x + dx, d.y + dy)
+                if not (self.out(cur)) and cur not in self.busy:
+                    if verb:
+                        self.fieled[cur.x][cur.y] = "."
+                    self.busy.append(cur)
+
+    def add_ship(self, ship):
+        """
+        Метод добавления корабля на поле. В первом цикле проходим по всем точкам корабля, проверяем не занята ли
+        координата корабля, если введенная координата занята то выводим ошибку.
+        Во втором цикле присваиваем меняем значение точек коробля на квадрат.
+        :param ship:
+        :return:
+        """
+        for dot in ship.dots:
+            if self.out(dot) or dot in self.busy:
+                raise BoardWrongShipException()
+        for dot in ship.dots:
+            self.fieled[dot.x][dot.y] = "■"
+            self.busy.append(dot)
+
+        self.ships.append(ship)
+        self.contour(ship)
