@@ -57,36 +57,36 @@ class Ship:
 
 
 class Game_board:
-    def __init__(self, hid = False, size = 6):
+    def __init__(self, hid=False, size=6):
         self.hid = hid
         self.size = size
 
         self.count = 0
 
-        self.fieled = [["O"]*size for _ in range(size)]
+        self.fieled = [["O"] * size for _ in range(size)]
 
         self.busy = []
         self.ships = []
 
     def __str__(self):
         res = ""
-        res +="  | 1 | 2 | 3 | 4 | 5 | 6 |"
+        res += "  | 1 | 2 | 3 | 4 | 5 | 6 |"
         for i, row in enumerate(self.fieled):
-            res += f"\n{i+1} | " + " | ".join(row) + " | "
+            res += f"\n{i + 1} | " + " | ".join(row) + " | "
 
         if self.hid:
             res = res.replace("■", "O")
         return res
 
     def out(self, d):
-        return not ((0<= d.x < self.size) and (0<= d.y < self.size))
+        return not ((0 <= d.x < self.size) and (0 <= d.y < self.size))
 
     def contour(self, ship, verb=True):
         """
         Метод contour заполняет пространство вокруг коробля на одну клетку.
         Список near содержит все элементы вокруг центральной точки
         В цилке проходим по точкам коробля и передаем d значение вида Dot(1, 2)
-        Во вложеном цикле проходим по списку near, и присваиваем dx и dy значения элементов списка. Далее в значение
+        Во вложенном цикле проходим по списку near, и присваиваем dx и dy значения элементов списка. Далее в значение
         cur записываем значение точки у корабля.
         :param ship: вызываем Ship: Ship(Dot(1, 2), 4, 0)
         :param verb: видимость поля вокруг кораблей.
@@ -122,3 +122,43 @@ class Game_board:
 
         self.ships.append(ship)
         self.contour(ship)
+    def shot(self, d):
+        """
+        Метод Shot.
+        Проверяем выходит ли точка за границы поля.
+        Проверяем не занята ли точка.
+        Если проверки пройдены, то добавляем точку в список занятых.
+        В цикле из точек корабля проходим по кораблям, и проверяем принадлежность точки к ним. Если точка есть в корабле,
+        то убираем у lives единицу. Меняем значение в поле на Х. Проходим проверку, если жизни равны нулю то увеличиваем
+        счетчик count на 1, делаем контур видимым и выводим сообщение Корабль уничтожен. Иначе корабль ранен.
+        Если точки нет в списке кораблей то меняем значение поля на точку и выводим сообщение мимо
+        :param d:
+        :return:
+        """
+        if self.out(d):
+            raise BoardOutException
+
+        if d in self.busy:
+            raise BoardUsedException
+
+        self.busy.append(d)
+
+        for ship in self.ships:
+            if ship.shooten(d):
+                ship.lives -= 1
+                self.fieled[d.x][d.y] = "X"
+                if ship.lives == 0:
+                    self.count += 1
+                    self.contour(ship, verb=True)
+                    print("Корабль уничтожен!")
+                    return False
+                else:
+                    print("Корабль ранен!")
+                    return True
+
+        self.fieled[d.x][d.y] = "."
+        print("Мимо!")
+        return False
+
+    def begin(self):
+        self.busy = []
