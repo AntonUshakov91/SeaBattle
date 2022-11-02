@@ -307,7 +307,7 @@ class Game:
         pl = self.random_board()
         co = self.random_board()
         co.hid = True
-        self.lens = [3, 2, 2, 1, 1, 1, 1]
+
         self.ai = AI(co, pl)
         self.us = User(pl, co)
 
@@ -317,9 +317,10 @@ class Game:
         Атрибут attempts количество попыток расстановки кораблей на поле.
         :return:
         """
+        lens = [3, 2, 2, 1, 1, 1, 1]
         board = Game_board(size=self.size)
         attempts = 0
-        for l in self.lens:
+        for l in lens:
             while True:
                 attempts += 1
                 if attempts > 10000:
