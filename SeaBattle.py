@@ -283,6 +283,17 @@ class User(Player):
             return Dot(x - 1, y - 1)
 
 
+def greet():
+    print("-------------------")
+    print("  Приветсвуем вас  ")
+    print("      в игре       ")
+    print("    морской бой    ")
+    print("-------------------")
+    print(" формат ввода: x y ")
+    print(" x - номер строки  ")
+    print(" y - номер столбца ")
+
+
 class Game:
     def __init__(self, size=6):
         """
@@ -296,19 +307,9 @@ class Game:
         pl = self.random_board()
         co = self.random_board()
         co.hid = True
-
+        self.lens = [3, 2, 2, 1, 1, 1, 1]
         self.ai = AI(co, pl)
         self.us = User(pl, co)
-
-    def greet(self):
-        print("-------------------")
-        print("  Приветсвуем вас  ")
-        print("      в игре       ")
-        print("    морской бой    ")
-        print("-------------------")
-        print(" формат ввода: x y ")
-        print(" x - номер строки  ")
-        print(" y - номер столбца ")
 
     def try_board(self):
         """
@@ -316,10 +317,9 @@ class Game:
         Атрибут attempts количество попыток расстановки кораблей на поле.
         :return:
         """
-        lens = [3, 2, 2, 1, 1, 1, 1]
         board = Game_board(size=self.size)
         attempts = 0
-        for l in lens:
+        for l in self.lens:
             while True:
                 attempts += 1
                 if attempts > 10000:
@@ -375,7 +375,7 @@ class Game:
             num += 1
 
     def start(self):
-        self.greet()
+        greet()
         self.loop()
 
 
